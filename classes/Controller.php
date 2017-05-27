@@ -70,13 +70,56 @@ class Controller {
     }
 
     /**
+     * Verifica se todos os dados foram corretamente informados
+     *
+     * @param $o
+     */
+    private function validaInit($o) {
+        // TODO
+        return true;
+    }
+
+
+    /**
+     * Função que realiza a validação e a inicialização da replicação
+     *
+     * @param $body = Corpo do POST recebido
+     */
+    public function init($body) {
+        parse_str($body,$o);
+        $valido = $this->validaInit($o);
+        if ($valido) {
+
+            $nome = $o['nome'];
+            $sigla = $o['sigla'];
+            $hz = $o['hz'];
+            $host = $o['host'];
+            $usuario = $o['usuario'];
+            $senha = $o['senha'];
+            $porta = $o['porta'];
+
+
+
+
+
+            $msg = "sucesso";
+        } else {
+            $msg = "Falha na validação dos dados informados";
+        }
+        $error = array(
+            'error' => $msg
+        );
+        return json_encode($error);
+    }
+
+    /**
      * Abre carregamento do bootstrap
      *
      */
     public function bootstrap_open() {
         $_return = '';
-        $_return .= '<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">';
-        $_return .= ' <nav class="navbar navbar-default">';
+        $_return .= '<link href="../assets/css/bootstrap.min.css" rel="stylesheet">';
+        $_return .= '<nav class="navbar navbar-default">';
         $_return .= '    <div class="container-fluid">';
         $_return .= '        <div class="navbar-header">';
         $_return .= '           <a class="navbar-brand" href="#">ProtegeMed</a>';
@@ -94,8 +137,9 @@ class Controller {
     public function bootstrap_close() {
         $_return = '';
         $_return .= '</div></div>';
-        $_return .= '<script src="//code.jquery.com/jquery-2.2.4.min.js"></script>';
-        $_return .= '<script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>';
+        $_return .= '<script src="../assets/js/jquery.min.js"></script>';
+        $_return .= '<script src="../assets/js/jquery-validate.min.js"></script>';
+        $_return .= '<script src="../assets/js/bootstrap.min.js"></script>';
         return $_return;
     }
 
@@ -116,5 +160,66 @@ class Controller {
             return json_encode($e404);
         }
     }
+
+    /**
+     * Carrega o HTML para o formulário de inicialização
+     *
+     */
+    public function formularioInit() {
+        echo $this->bootstrap_open();
+        echo '<form id="formInit" class="form-horizontal">';
+        echo '    <div class="form-group">';
+        echo '        <label for="nome" class="col-md-4 control-label">Nome local</label>';
+        echo '        <div class="col-md-4">';
+        echo '            <input type="text" class="form-control" id="nome" name="nome" tabindex="1">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="sigla" class="col-md-4 control-label">Sigla</label>';
+        echo '        <div class="col-md-2">';
+        echo '            <input type="text" class="form-control" id="sigla" name="sigla" tabindex="2">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="hz" class="col-md-4 control-label">Frequência de corrente (Hz)</label>';
+        echo '        <div class="col-md-2">';
+        echo '            <input type="text" class="form-control" id="hz" name="hz" tabindex="3">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="host" class="col-md-4 control-label">Servidor (Host)</label>';
+        echo '        <div class="col-md-4">';
+        echo '            <input type="text" class="form-control" id="host" name="host" tabindex="4">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="usuario" class="col-md-4 control-label">Usuário BD</label>';
+        echo '        <div class="col-md-3">';
+        echo '            <input type="text" class="form-control" id="usuario" name="usuario" tabindex="5">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="senha" class="col-md-4 control-label">Senha BD</label>';
+        echo '        <div class="col-md-3">';
+        echo '            <input type="password" class="form-control" id="senha" name="senha" tabindex="6">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="porta" class="col-md-4 control-label">Porta</label>';
+        echo '        <div class="col-md-2">';
+        echo '            <input type="text" class="form-control" id="porta" name="porta" tabindex="7">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <div class="col-md-offset-4 col-md-2">';
+        echo '            <button id="btnSubmit" type="button" class="btn btn-primary" tabindex="8">Inicializar</button>';
+        echo '        </div>';
+        echo '    </div>';
+        echo '</form>';
+        echo $this->bootstrap_close();
+        echo '<script src="../assets/scripts/Inicializador.js"></script>';
+    }
+
+
 
 }

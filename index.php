@@ -62,10 +62,21 @@ $app->post('/marca', function () {
  */
 $app->get('/init', function ($request, $response, $args) {
     $Controller = new Controller();
+    $Controller->formularioInit();
 });
 
-$app->post('/init', function () {
+$app->post('/init', function ($request) {
     $Controller = new Controller();
+    $body = $request->getBody()->getSize();
+    if ($body != null) {
+        echo $Controller->init($request->getBody());
+    } else {
+        $error = array(
+            'error' => 'Parâmetros de inicialização não informados'
+        );
+        return json_encode($error,JSON_UNESCAPED_UNICODE);
+    }
+
 });
 
 

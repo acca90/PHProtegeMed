@@ -59,8 +59,8 @@ class Persistencia {
      *
      * @return mysqli|null
      */
-    private function con_open() {
-        if ($connection = mysqli_connect($this->host, $this->user, $this->passw, $this->db)) {
+    private function con_open($admin = false) {
+        if ($connection = mysqli_connect($this->host, $this->user, $this->passw, ($admin ? $this->dbAdmin : $this->db) )) {
             mysqli_set_charset($connection,"utf8");
             return $connection;
         } else {
@@ -88,6 +88,18 @@ class Persistencia {
         return null;
     }
 
+    /**
+     * Função que realiza queries sem preparação especial
+     *
+     * @param $sql
+     *
+     */
+    public function directQuery($sql) {
+        $connection = $this->con_open(true);
+        $result = mysqli_query($connection,$sql);
+        mysqli_close($connection);
+        return $result;
+    }
 
 
 
