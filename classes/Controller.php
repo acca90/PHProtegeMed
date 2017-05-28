@@ -97,12 +97,30 @@ class Controller {
             $usuario = $o['usuario'];
             $senha = $o['senha'];
             $porta = $o['porta'];
+            $arqlog = $o['arqlog'];
+            $poslog = $o['poslog'];
 
+            $sql = "insert into locais (nome,sigla,banco,hz,MASTER_HOST,MASTER_USER,MASTER_PASSWORD,MASTER_PORT,MASTER_CHANNEL) values";
+            $sql .= "('$nome','$sigla','protegemed_$sigla',$hz,'$host','$usuario','$senha',$porta,'protegemed_$sigla');";
 
+            $this->Persistencia->directQuery($sql);
+            $this->Persistencia->directQuery("create database protegemed_$sigla");
+            exec("mysql -u".$this->Persistencia->getUser()." -p".$this->Persistencia->getPassw()." protegemed_$sigla < /var/www/html/PHProtegeMed/scripts/protegemed.sql");
 
+            $slaveSQL = "CHANGE MASTER TO MASTER_HOST = \"$host\", ";
+            $slaveSQL .= "MASTER_USER = \"$usuario\", ";
+            $slaveSQL .= "MASTER_PASSWORD = \"$senha\", ";
+            $slaveSQL .= "MASTER_PORT = $porta, ";
+            $slaveSQL .= "MASTER_LOG_FILE = \"$arqlog\", ";
+            $slaveSQL .= "MASTER_LOG_POS = $poslog FOR CHANNEL \"protegemed_$sigla\"";
+            $this->Persistencia->directQuery($slaveSQL);
 
+            $startSlaveSQL = "START SLAVE FOR CHANNEL \"protegemed_$sigla\"";
+            $this->Persistencia->directQuery($startSlaveSQL);
 
             $msg = "sucesso";
+            $msg = $slaveSQL;
+
         } else {
             $msg = "Falha na validação dos dados informados";
         }
@@ -208,6 +226,18 @@ class Controller {
         echo '        <label for="porta" class="col-md-4 control-label">Porta</label>';
         echo '        <div class="col-md-2">';
         echo '            <input type="text" class="form-control" id="porta" name="porta" tabindex="7">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="arqlog" class="col-md-4 control-label">Arquivo de Log</label>';
+        echo '        <div class="col-md-4">';
+        echo '            <input type="text" class="form-control" id="arqlog" name="arqlog" tabindex="7">';
+        echo '        </div>';
+        echo '    </div>';
+        echo '    <div class="form-group">';
+        echo '        <label for="poslog" class="col-md-4 control-label">Posição do Log</label>';
+        echo '        <div class="col-md-2">';
+        echo '            <input type="text" class="form-control" id="poslog" name="poslog" tabindex="7">';
         echo '        </div>';
         echo '    </div>';
         echo '    <div class="form-group">';

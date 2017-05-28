@@ -101,6 +101,50 @@ class Persistencia {
         return $result;
     }
 
+    /**
+     * @return string
+     */
+    public function getHost() {
+        return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser() {
+        return $this->user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassw() {
+        return $this->passw;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDb() {
+        return $this->db;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDbAdmin() {
+        return $this->dbAdmin;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTags() {
+        return $this->tags;
+    }
+
+
+
 
 
 }

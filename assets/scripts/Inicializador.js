@@ -23,20 +23,41 @@ var Inicializador = (function ($) {
             });
 
             if (formInit.valid()) {
+
+                var data = formInit.serialize();
+                var disableds = formInit.find('input').attr('disabled','disabled');
+
                 $.ajax({
                     type: 'POST',
                     url: 'init',
-                    data: formInit.serialize(),
+                    data: data,
                     success: function ( data ) {
-                        alert(JSON.stringify(data));
+                        if (notEmpty(data) && data.error == 'sucesso') {
+                            disableds.removeAttr('disabled').val('');
+                            alert('Instância replicada com sucesso');
+                        } else {
+                            disableds.removeAttr('disabled');
+                            alert('Falha na inicialização da replicação');
+                        }
                     },
                     error: function () {
+                        disableds.removeAttr('disabled');
                         alert('Falha ao submeter formulário');
                     }
                 });
             }
 
         });
+    };
+
+    /**
+     * Verifica se o valor informado não é nulo ou vazio
+     *
+     * @param dado
+     * @returns {boolean}
+     */
+    var notEmpty = function ( dado ) {
+        return dado !== null && dado !== undefined && dado !== '';
     };
 
     /**
@@ -64,6 +85,13 @@ var Inicializador = (function ($) {
                 required: true
             },
             "porta": {
+                required: true,
+                number: true
+            },
+            "arqlog": {
+                required: true
+            },
+            "poslog": {
                 required: true,
                 number: true
             }
@@ -97,6 +125,13 @@ var Inicializador = (function ($) {
             "porta": {
                 required: "Informe a porta do BD",
                 number: "Informe apenas números para a porta"
+            },
+            "arqlog": {
+                required: "Informe o arquivo de logs do MySQL"
+            },
+            "poslog": {
+                required: "Informe a posição inicial de leitura do log",
+                number: "Informe apenas numeros para posição de leitura do log"
             }
         };
     };
