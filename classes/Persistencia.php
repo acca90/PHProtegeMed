@@ -14,7 +14,7 @@ class Persistencia {
      *
      * @return array|null
      */
-    private function preQuery() {
+    public function preQuery() {
         $connection = $this->con_open();
         if ($connection != null) {
             $sql = 'SELECT SCHEMA_NAME from SCHEMATA WHERE SCHEMA_NAME LIKE "protegemed_%";';
@@ -29,30 +29,6 @@ class Persistencia {
         return null;
     }
 
-    /**
-     * Prepara query para consulta em todos os bancos de dados
-     *
-     * @param $preQuery
-     * @param $sql
-     * @return string
-     */
-    private function prepareSQL($preQuery, $sql) {
-        $newSql = array();
-        foreach($preQuery as $db) {
-            $value = array($db,$this->dbAdmin);
-            array_push($newSql,str_replace($this->tags,$value, $sql));
-        }
-        return join(' union ',$newSql) . $this->order_by();
-    }
-
-    /**
-     * Define ordenação das consultas
-     *
-     * @return string
-     */
-    private function order_by() {
-        return '';
-    }
 
     /**
      * Abre conexoã com o information_schema
@@ -75,26 +51,6 @@ class Persistencia {
      * @return bool|mysqli_result|null
      */
     public function query($sql) {
-        $preQuery = $this->preQuery();
-        if ($preQuery != null && count($preQuery) > 0) {
-            $finalQuery = $this->prepareSQL($preQuery,$sql);
-            $connection = $this->con_open();
-            if ($connection != null) {
-                $result = mysqli_query($connection,$finalQuery);
-                mysqli_close($connection);
-                return $result;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Função que realiza queries sem preparação especial
-     *
-     * @param $sql
-     *
-     */
-    public function directQuery($sql) {
         $connection = $this->con_open(true);
         $result = mysqli_query($connection,$sql);
         mysqli_close($connection);

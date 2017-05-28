@@ -19,12 +19,16 @@ class Controller {
      */
     public function getContatos($table = false) {
 
-        $sql = '';
-        $sql .= ' select * from $db$.marca ';
-        $sql .= ' inner join $dbAdmin$.locais local ';
-        $sql .= ' on local.banco =  \'$db$\'';
+        $queryBuilder = new QueryBuilder();
+        $queryBuilder->setIdentificadorLocal('sigla as local, hz');
+        $queryBuilder->setCampos('cap.codCaptura,cap.CodTomada,cap.CodEquip,equip.desc,cap.eficaz,equip.tempoUso,cap.dataAtual,cap.codEvento');
+        $queryBuilder->setTabelas('capturaatual cap, usosalacaptura uso, equipamento equip');
+        $queryBuilder->setCondicao('cap.codCaptura = uso.codCaptura');
+        $queryBuilder->setCondicao('equip.codEquip = cap.codEquip');
+        $queryBuilder->setCondicao('(cap.codEvento = 1 OR cap.codEvento = 4)');
+        $queryBuilder->setOrdem('dataAtual desc');
+        $query = $this->Persistencia->query($queryBuilder->getSQL());
 
-        $query = $this->Persistencia->query($sql);
         if ($query != null) {
             $_return = array();
             while ($row = $query->fetch_array(MYSQLI_ASSOC))
@@ -103,8 +107,8 @@ class Controller {
             $sql = "insert into locais (nome,sigla,banco,hz,MASTER_HOST,MASTER_USER,MASTER_PASSWORD,MASTER_PORT,MASTER_CHANNEL) values";
             $sql .= "('$nome','$sigla','protegemed_$sigla',$hz,'$host','$usuario','$senha',$porta,'protegemed_$sigla');";
 
-            $this->Persistencia->directQuery($sql);
-            $this->Persistencia->directQuery("create database protegemed_$sigla");
+            $this->Persistencia->query($sql);
+            $this->Persistencia->query("create database protegemed_$sigla");
             exec("mysql -u".$this->Persistencia->getUser()." -p".$this->Persistencia->getPassw()." protegemed_$sigla < /var/www/html/PHProtegeMed/scripts/protegemed.sql");
 
             $slaveSQL = "CHANGE MASTER TO MASTER_HOST = \"$host\", ";
@@ -113,13 +117,12 @@ class Controller {
             $slaveSQL .= "MASTER_PORT = $porta, ";
             $slaveSQL .= "MASTER_LOG_FILE = \"$arqlog\", ";
             $slaveSQL .= "MASTER_LOG_POS = $poslog FOR CHANNEL \"protegemed_$sigla\"";
-            $this->Persistencia->directQuery($slaveSQL);
+            $this->Persistencia->query($slaveSQL);
 
             $startSlaveSQL = "START SLAVE FOR CHANNEL \"protegemed_$sigla\"";
-            $this->Persistencia->directQuery($startSlaveSQL);
+            $this->Persistencia->query($startSlaveSQL);
 
             $msg = "sucesso";
-            $msg = $slaveSQL;
 
         } else {
             $msg = "Falha na validação dos dados informados";
@@ -206,43 +209,46 @@ class Controller {
         echo '    </div>';
         echo '    <div class="form-group">';
         echo '        <label for="host" class="col-md-4 control-label">Servidor (Host)</label>';
-        echo '        <div class="col-md-4">';
+        echo '        <div class="col-md-3">';
         echo '            <input type="text" class="form-control" id="host" name="host" tabindex="4">';
+        echo '        </div>';
+        echo '        <label for="porta" class="col-md-1 control-label">Porta</label>';
+        echo '        <div class="col-md-1">';
+        echo '            <input type="text" class="form-control" id="porta" name="porta" tabindex="7">';
         echo '        </div>';
         echo '    </div>';
         echo '    <div class="form-group">';
         echo '        <label for="usuario" class="col-md-4 control-label">Usuário BD</label>';
-        echo '        <div class="col-md-3">';
+        echo '        <div class="col-md-2">';
         echo '            <input type="text" class="form-control" id="usuario" name="usuario" tabindex="5">';
         echo '        </div>';
         echo '    </div>';
         echo '    <div class="form-group">';
         echo '        <label for="senha" class="col-md-4 control-label">Senha BD</label>';
-        echo '        <div class="col-md-3">';
+        echo '        <div class="col-md-2">';
         echo '            <input type="password" class="form-control" id="senha" name="senha" tabindex="6">';
         echo '        </div>';
         echo '    </div>';
         echo '    <div class="form-group">';
-        echo '        <label for="porta" class="col-md-4 control-label">Porta</label>';
-        echo '        <div class="col-md-2">';
-        echo '            <input type="text" class="form-control" id="porta" name="porta" tabindex="7">';
-        echo '        </div>';
-        echo '    </div>';
-        echo '    <div class="form-group">';
         echo '        <label for="arqlog" class="col-md-4 control-label">Arquivo de Log</label>';
-        echo '        <div class="col-md-4">';
+        echo '        <div class="col-md-2">';
         echo '            <input type="text" class="form-control" id="arqlog" name="arqlog" tabindex="7">';
         echo '        </div>';
-        echo '    </div>';
-        echo '    <div class="form-group">';
-        echo '        <label for="poslog" class="col-md-4 control-label">Posição do Log</label>';
-        echo '        <div class="col-md-2">';
-        echo '            <input type="text" class="form-control" id="poslog" name="poslog" tabindex="7">';
+        echo '        <label for="poslog" class="col-md-2 control-label">Posição do Log</label>';
+        echo '        <div class="col-md-1">';
+        echo '            <input type="text" class="form-control" id="poslog" name="poslog" tabindex="8">';
         echo '        </div>';
         echo '    </div>';
+        //echo '    <div class="form-group">';
+        //echo '        <label for="filebd" class="col-md-4 control-label">Backup do BD</label>';
+        //echo '        <div class="col-md-2">';
+        //echo '            <input type="text" class="form-control" onclick="$(\'#filebd\').trigger(\'click\')" readonly tabindex="9">';
+        //echo '            <input type="file" style="display: none" name="filebd" id="filebd" accept=".txt,.sql">';
+        //echo '        </div>';
+        //echo '    </div>';
         echo '    <div class="form-group">';
         echo '        <div class="col-md-offset-4 col-md-2">';
-        echo '            <button id="btnSubmit" type="button" class="btn btn-primary" tabindex="8">Inicializar</button>';
+        echo '            <button id="btnSubmit" type="button" class="btn btn-primary" tabindex="10">Inicializar</button>';
         echo '        </div>';
         echo '    </div>';
         echo '</form>';

@@ -3,6 +3,7 @@ header("Content-type: text/html; charset=utf-8");
 require_once("vendor/autoload.php");
 require_once("classes/Persistencia.php");
 require_once("classes/Controller.php");
+require_once("classes/QueryBuilder.php");
 
 //Create Your container
 $c = new \Slim\Container();

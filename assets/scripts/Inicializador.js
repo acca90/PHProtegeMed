@@ -14,10 +14,10 @@ var Inicializador = (function ($) {
                     element.attr('title',error.text());
                 },
                 highlight: function ( element, errorClass, validClass ) {
-                    $( element ).parents( "div" ).addClass( "has-error" ).removeClass( "has-success" );
+                        $( element ).parents( ".form-group" ).addClass( "has-error" ).removeClass( "has-success" );
                 },
                 unhighlight: function (element, errorClass, validClass) {
-                    $( element ).parents( "div" ).addClass( "has-success" ).removeClass( "has-error" ).removeAttr('title');
+                    $( element ).parents( ".form-group" ).addClass( "has-success" ).removeClass( "has-error" ).removeAttr('title');
                 }
 
             });
