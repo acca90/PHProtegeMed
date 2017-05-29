@@ -2,7 +2,7 @@
 
 $retorno = "";
 function curl($tipo="",$meta="",$GET=false) {
-    $curl = curl_init("http://localhost/PHProtegeMed/index.php/init");
+    $curl = curl_init("http://localhost/PHProtegeMed/index.php/get_all_detalhes");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_POSTFIELDS, null);
     $curl_response = curl_exec($curl);

@@ -17,7 +17,7 @@ class Controller {
     /**
      * @return mixed
      */
-    public function getContatos($table = false) {
+    public function ultimascapturadas($table = false) {
 
         $queryBuilder = new QueryBuilder();
         $queryBuilder->setIdentificadorLocal('sigla as local, hz');

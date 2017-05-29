@@ -37,14 +37,19 @@ $app->get('/', function ($request, $response, $args) {
  * Listagem da tabela marca
  *
  */
-$app->get('/marca', function ($request, $response, $args) {
+$app->get('/ultimascapturadas/atualizaTable', function ($request, $response, $args) {
     $Controller = new Controller();
-    echo $Controller->getContatos($table = true);
+    echo $Controller->ultimascapturadas($table = true);
 });
 
-$app->post('/marca', function () {
+$app->post('/ultimascapturadas/atualizaTable', function () {
     $Controller = new Controller();
-    $Controller->getContatos();
+    $Controller->ultimascapturadas();
+});
+
+$app->post('/ultimascapturadas/ultimaCaptura', function () {
+    $Controller = new Controller();
+    $Controller->ultimascapturadas();
 });
 
 /**
